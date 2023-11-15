@@ -50,7 +50,7 @@ module DE1_SoC (HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, KEY, LEDR, SW, CLOCK_50,
 		.reset			(1'b0), 
 		.x, 
 		.y,
-		.pixel_color	(1'b1), 
+		.pixel_color	(draw), 
 		.pixel_write	(1'b1),
 		.VGA_R, 
 		.VGA_G, 
@@ -61,14 +61,20 @@ module DE1_SoC (HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, KEY, LEDR, SW, CLOCK_50,
 		.VGA_BLANK_n	(VGA_BLANK_N), 
 		.VGA_SYNC_n		(VGA_SYNC_N));
 				
-	logic done;
+	logic done, draw, nl, draw_clk, anim_clk;
+	logic [31:0] div_clk;
 
-	line_drawer lines (.clk(CLOCK_50), .reset(1'b0),.x0, .y0, .x1, .y1, .x, .y, .done);
+	line_drawer lines (.clk(CLOCK_50), .reset(nl), .x0, .y0, .x1, .y1, .x, .y, .done);
+	clock_divider cd (.clock(CLOCK_50), .divided_clocks(div_clk));
+	
+	assign draw_clk = div_clk[22];
+	assign anim_clk = div_clk[24];
+	
+	assign x0 = 100;
+	assign x1 = 400;
+	assign y0 = 200;
+	assign y1 = 312;
 	
 	assign LEDR[9] = done;
-	assign x0 = 50;
-	assign y0 = 50;
-	assign x1 = 150;
-	assign y1 = 100;
 
 endmodule  // DE1_SoC
